@@ -96,7 +96,7 @@ export async function processImage(
         await optimizeJpeg(resizedPath, outputPath, { quality: settings.quality });
         break;
       case 'png':
-        await optimizePng(resizedPath, outputPath);
+        await optimizePng(resizedPath, outputPath, { quality: settings.quality });
         break;
       case 'webp':
         await optimizeWebp(resizedPath, outputPath, { quality: settings.quality });

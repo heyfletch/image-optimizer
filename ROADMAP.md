@@ -31,6 +31,12 @@
 - Click-to-edit the output filename before optimizing
 - "Clean" button to sanitize filenames (replace spaces/special chars with hyphens)
 
+## SVG Custom Optimization
+- Add a "Custom" SVG optimization level button
+- Opens configurable SVGO plugin options in settings
+- Fine-grained control over which optimizations to apply
+- Presets for specific frameworks (e.g., Bricks Builder: preserve data-* attributes)
+
 ## Lossless Toggle
 - Add a lossless encoding toggle for WebP and AVIF formats
 - When enabled, passes `lossless: true` to Sharp and disables the quality slider

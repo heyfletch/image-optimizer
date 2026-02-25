@@ -28,9 +28,13 @@ export function SettingsPanel({
     onSettingsChange({ ...settings, ...partial });
   };
 
-  const isSvg = imageFormat === 'svg' || settings.format === 'svg';
+  const isSvgInput = imageFormat === 'svg';
+  const isSvgOutput = settings.format === 'svg';
   const isPng = settings.format === 'png' || (settings.format === 'same' && imageFormat === 'png');
-  const qualityDisabled = isSvg;
+  const showQuality = !isSvgInput;
+  const showDimensions = !isSvgOutput;
+  const showMaxFileSize = !isPng && !isSvgInput;
+  const showSvgMode = isSvgOutput;
 
   return (
     <div className="p-4 space-y-5">
@@ -40,13 +44,15 @@ export function SettingsPanel({
         inputFormat={imageFormat}
       />
 
-      <QualitySlider
-        value={settings.quality}
-        onChange={(quality) => update({ quality })}
-        disabled={qualityDisabled}
-      />
+      {showQuality && (
+        <QualitySlider
+          value={settings.quality}
+          onChange={(quality) => update({ quality })}
+          disabled={false}
+        />
+      )}
 
-      {!isSvg && (
+      {showDimensions && (
         <DimensionControls
           width={settings.width}
           imageWidth={imageWidth}
@@ -54,14 +60,14 @@ export function SettingsPanel({
         />
       )}
 
-      {!isPng && !isSvg && (
+      {showMaxFileSize && (
         <MaxFileSizeInput
           value={settings.maxFileSize}
           onChange={(maxFileSize) => update({ maxFileSize })}
         />
       )}
 
-      {isSvg && (
+      {showSvgMode && (
         <SvgModeSelector
           value={settings.svgMode}
           onChange={(svgMode) => update({ svgMode: svgMode as OptimizeSettings['svgMode'] })}

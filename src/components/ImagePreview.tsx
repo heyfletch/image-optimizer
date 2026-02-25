@@ -50,6 +50,7 @@ export function ImagePreview({
 }: ImagePreviewProps) {
   const [showOriginal, setShowOriginal] = useState(false);
 
+  const isSvg = originalPath.toLowerCase().endsWith('.svg');
   const displayPath = showOriginal || !optimizedPath ? originalPath : optimizedPath;
   const displaySize = showOriginal || !optimizedSize ? originalSize : optimizedSize;
   const isOriginal = showOriginal || !optimizedPath;
@@ -81,7 +82,7 @@ export function ImagePreview({
           <img
             src={imageSrc}
             alt={filename}
-            className="max-w-full max-h-[60vh] object-contain"
+            className={`max-w-full max-h-[60vh] object-contain ${isSvg ? 'min-w-[300px] min-h-[200px] bg-white/5 p-4' : ''}`}
             draggable={false}
           />
         ) : (

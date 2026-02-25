@@ -45,6 +45,16 @@ function App() {
 
   const selectedImage = images[selectedIndex] || null;
 
+  // Auto-switch format when image type changes
+  useEffect(() => {
+    if (!selectedImage) return;
+    if (selectedImage.format === 'svg' && settings.format !== 'svg') {
+      setSettings({ ...settings, format: 'svg', svgMode: settings.svgMode || 'safe' });
+    } else if (selectedImage.format !== 'svg' && settings.format === 'svg') {
+      setSettings({ ...settings, format: 'same' });
+    }
+  }, [selectedImage?.format]);
+
   useEffect(() => {
     startSidecar()
       .then(() => sendRequest({ action: "ping", inputPath: "", outputPath: "", settings: defaultSettings }))

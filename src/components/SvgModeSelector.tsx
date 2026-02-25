@@ -1,7 +1,6 @@
 const SVG_MODES = [
   { value: 'safe', label: 'Safe', desc: 'Preserves classes, IDs, attributes' },
-  { value: 'bricks-safe', label: 'Bricks Safe', desc: 'Preserves Bricks data-* attrs' },
-  { value: 'efficient', label: 'Efficient', desc: 'Aggressive optimization' },
+  { value: 'standard', label: 'Standard', desc: 'SVGO default optimization' },
 ] as const;
 
 interface SvgModeSelectorProps {
@@ -12,7 +11,7 @@ interface SvgModeSelectorProps {
 export function SvgModeSelector({ value, onChange }: SvgModeSelectorProps) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-400 mb-2">SVG Mode</label>
+      <label className="block text-xs font-medium text-gray-400 mb-2">SVG Optimization Level</label>
       <div className="space-y-1">
         {SVG_MODES.map(({ value: mode, label, desc }) => (
           <button

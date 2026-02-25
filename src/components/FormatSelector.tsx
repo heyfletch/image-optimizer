@@ -14,13 +14,17 @@ interface FormatSelectorProps {
 }
 
 export function FormatSelector({ value, onChange, inputFormat }: FormatSelectorProps) {
+  const isSvgInput = inputFormat === 'svg';
+
   return (
     <div>
       <label className="block text-xs font-medium text-gray-400 mb-2">Convert to</label>
       <div className="flex flex-wrap gap-1">
         {FORMATS.map(({ value: fmt, label }) => {
-          // Only show SVG option if input is SVG
-          if (fmt === 'svg' && inputFormat !== 'svg') return null;
+          // SVG input: hide JPEG and Resize only
+          if (isSvgInput && (fmt === 'jpeg' || fmt === 'same')) return null;
+          // Non-SVG input: hide SVG option
+          if (!isSvgInput && fmt === 'svg') return null;
 
           return (
             <button

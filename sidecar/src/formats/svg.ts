@@ -1,6 +1,6 @@
 import { optimize, type Config } from 'svgo';
 
-type SvgMode = 'safe' | 'bricks-safe' | 'efficient';
+type SvgMode = 'safe' | 'standard';
 
 const safeConfig: Config = {
   plugins: [
@@ -17,40 +17,22 @@ const safeConfig: Config = {
   ],
 };
 
-const bricksSafeConfig: Config = {
-  plugins: [
-    ...(safeConfig.plugins as any[]),
-    'mergePaths',
-    'removeUselessDefs',
-    {
-      name: 'removeAttrs',
-      params: {
-        attrs: [],  // Don't remove any attrs — preserve data-bricks-*, classes, IDs
-      },
-    },
-  ],
-};
-
-const efficientConfig: Config = {
+const standardConfig: Config = {
   plugins: [
     {
       name: 'preset-default',
-    },
-    'removeStyleElement',
-    {
-      name: 'removeAttrs',
       params: {
-        attrs: ['class', 'data-.*'],
-        preserveCurrentColor: true,
+        overrides: {
+          removeViewBox: false,
+        },
       },
-    },
+    } as any,
   ],
 };
 
 const configs: Record<SvgMode, Config> = {
   'safe': safeConfig,
-  'bricks-safe': bricksSafeConfig,
-  'efficient': efficientConfig,
+  'standard': standardConfig,
 };
 
 export function optimizeSvg(svgString: string, mode: SvgMode): string {
