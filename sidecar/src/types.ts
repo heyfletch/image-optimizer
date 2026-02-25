@@ -13,7 +13,7 @@ export interface OptimizeSettings {
   height: number | null;
   maintainAspectRatio: boolean;
   maxFileSize: number | null;  // bytes, null = no limit
-  svgMode: 'safe' | 'standard' | null;
+  svgMode: 'safe' | 'standard' | 'none' | null;
   svgResponsive: boolean;
 }
 

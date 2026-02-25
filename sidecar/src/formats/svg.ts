@@ -1,6 +1,6 @@
 import { optimize, type Config } from 'svgo';
 
-type SvgMode = 'safe' | 'standard';
+type SvgMode = 'safe' | 'standard' | 'none';
 
 const safeConfig: Config = {
   plugins: [
@@ -36,6 +36,7 @@ const configs: Record<SvgMode, Config> = {
 };
 
 export function optimizeSvg(svgString: string, mode: SvgMode): string {
+  if (mode === 'none') return svgString;
   const result = optimize(svgString, configs[mode]);
   return result.data;
 }

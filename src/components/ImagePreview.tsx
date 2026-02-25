@@ -96,10 +96,11 @@ export function ImagePreview({
         <div className={`absolute bottom-2 left-2 bg-black/70 px-3 py-1 rounded text-sm ${
           isOriginal ? 'text-white' : 'text-green-400'
         }`}>
-          {label} &middot; {formatBytes(displaySize)} &middot; {displayWidth}&times;{displayHeight}
+          {label}
           {savings != null && !isOriginal && (
-            <span className="ml-2">-{savings}%</span>
+            <span className="ml-1">-{savings}%</span>
           )}
+          {' '}&middot; {displayWidth}&times;{displayHeight} &middot; {formatBytes(displaySize)}
         </div>
         {optimizedPath && (
           <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-gray-300">
