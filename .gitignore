@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+target/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# Worktrees
+.worktrees/
