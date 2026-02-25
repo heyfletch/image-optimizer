@@ -1,4 +1,5 @@
 use base64::Engine;
+use std::path::Path;
 
 #[tauri::command]
 fn read_file_base64(path: String) -> Result<String, String> {
@@ -20,7 +21,39 @@ fn read_file_base64(path: String) -> Result<String, String> {
 
 #[tauri::command]
 fn move_to_trash(path: String) -> Result<(), String> {
-    trash::delete(&path).map_err(|e| format!("Failed to trash {}: {}", path, e))
+    let file_path = Path::new(&path);
+    if !file_path.exists() {
+        return Err(format!("File not found: {}", path));
+    }
+
+    let filename = file_path
+        .file_name()
+        .ok_or_else(|| "Invalid filename".to_string())?
+        .to_string_lossy();
+
+    let home = std::env::var("HOME").map_err(|_| "Cannot find HOME directory".to_string())?;
+    let trash_dir = Path::new(&home).join(".Trash");
+
+    let mut dest = trash_dir.join(&*filename);
+
+    // Handle name conflicts by appending a timestamp
+    if dest.exists() {
+        let stem = file_path
+            .file_stem()
+            .unwrap_or_default()
+            .to_string_lossy();
+        let ext = file_path
+            .extension()
+            .map(|e| format!(".{}", e.to_string_lossy()))
+            .unwrap_or_default();
+        let ts = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        dest = trash_dir.join(format!("{} {}{}", stem, ts, ext));
+    }
+
+    std::fs::rename(&path, &dest).map_err(|e| format!("Failed to move to trash: {}", e))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
