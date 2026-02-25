@@ -14,7 +14,9 @@
       {
         "title": "Image Optimizer",
         "width": 900,
-        "height": 700
+        "height": 700,
+        "minWidth": 500,
+        "minHeight": 400
       }
     ],
     "security": {
