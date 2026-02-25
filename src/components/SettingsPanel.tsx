@@ -32,7 +32,7 @@ export function SettingsPanel({
   const isSvgOutput = settings.format === 'svg';
   const isPng = settings.format === 'png' || (settings.format === 'same' && imageFormat === 'png');
   const showQuality = !isSvgInput;
-  const showDimensions = !isSvgOutput;
+  const showDimensions = !(isSvgOutput && settings.svgResponsive);
   const showMaxFileSize = !isPng && !isSvgInput;
   const showSvgMode = isSvgOutput;
 
@@ -71,6 +71,8 @@ export function SettingsPanel({
         <SvgModeSelector
           value={settings.svgMode}
           onChange={(svgMode) => update({ svgMode: svgMode as OptimizeSettings['svgMode'] })}
+          svgResponsive={settings.svgResponsive}
+          onResponsiveChange={(svgResponsive) => update({ svgResponsive })}
         />
       )}
 

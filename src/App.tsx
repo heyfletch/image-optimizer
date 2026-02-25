@@ -53,7 +53,7 @@ function App() {
     if (selectedImage.format === 'svg' && settings.format !== 'svg') {
       setSettings({ ...settings, format: 'svg', svgMode: settings.svgMode || 'standard' });
     } else if (selectedImage.format !== 'svg' && settings.format === 'svg') {
-      setSettings({ ...settings, format: 'same' });
+      setSettings({ ...settings, format: 'same', svgResponsive: false });
     }
   }, [selectedImage?.format]);
 
