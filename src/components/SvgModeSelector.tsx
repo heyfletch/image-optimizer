@@ -1,6 +1,6 @@
 const SVG_MODES = [
+  { value: 'standard', label: 'Standard', desc: 'Common SVG optimizations' },
   { value: 'safe', label: 'Safe', desc: 'Preserves classes, IDs, attributes' },
-  { value: 'standard', label: 'Standard', desc: 'SVGO default optimization' },
 ] as const;
 
 interface SvgModeSelectorProps {

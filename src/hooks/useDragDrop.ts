@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 interface DragDropState {
   isDragging: boolean;
@@ -22,6 +23,8 @@ export function useDragDrop() {
         setState(prev => ({ ...prev, isDragging: false }));
       } else if (event.payload.type === 'drop') {
         setState({ isDragging: false, droppedFiles: event.payload.paths });
+        window.focus();
+        getCurrentWindow().setFocus().catch(() => {});
       }
     }).then(fn => { unlisten = fn; });
 

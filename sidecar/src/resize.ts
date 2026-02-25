@@ -4,6 +4,7 @@ export interface ResizeOptions {
   width?: number | null;
   height?: number | null;
   maintainAspectRatio: boolean;
+  density?: number;
 }
 
 export async function resizeImage(
@@ -11,19 +12,20 @@ export async function resizeImage(
   outputPath: string,
   options: ResizeOptions
 ): Promise<void> {
-  let pipeline = sharp(inputPath);
+  const sharpOptions = options.density ? { density: options.density } : undefined;
+  let pipeline = sharp(inputPath, sharpOptions);
 
   if (options.width || options.height) {
     if (options.maintainAspectRatio) {
       pipeline = pipeline.resize(options.width ?? undefined, options.height ?? undefined, {
         fit: 'inside',
-        withoutEnlargement: true,
+        withoutEnlargement: !options.density,
       });
     } else {
       pipeline = pipeline.resize(options.width ?? undefined, options.height ?? undefined, {
         fit: 'cover',
         position: 'centre',
-        withoutEnlargement: true,
+        withoutEnlargement: !options.density,
       });
     }
   }

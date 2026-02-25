@@ -24,14 +24,25 @@ export async function getImageInfo(inputPath: string): Promise<ImageInfo> {
 
   if (ext === 'svg') {
     const content = fs.readFileSync(inputPath, 'utf8');
+    let width = 0;
+    let height = 0;
+
+    // Try explicit width/height first
     const widthMatch = content.match(/width="(\d+)/);
     const heightMatch = content.match(/height="(\d+)/);
-    return {
-      width: widthMatch ? parseInt(widthMatch[1]) : 0,
-      height: heightMatch ? parseInt(heightMatch[1]) : 0,
-      format: 'svg',
-      size: stats.size,
-    };
+    if (widthMatch) width = parseInt(widthMatch[1]);
+    if (heightMatch) height = parseInt(heightMatch[1]);
+
+    // Fall back to viewBox dimensions
+    if (!width || !height) {
+      const vbMatch = content.match(/viewBox=["'][\d.]+\s+[\d.]+\s+([\d.]+)\s+([\d.]+)/);
+      if (vbMatch) {
+        if (!width) width = Math.round(parseFloat(vbMatch[1]));
+        if (!height) height = Math.round(parseFloat(vbMatch[2]));
+      }
+    }
+
+    return { width, height, format: 'svg', size: stats.size };
   }
 
   const metadata = await sharp(inputPath).metadata();
@@ -69,7 +80,7 @@ export async function processImage(
     // Handle SVG
     if (targetFormat === 'svg') {
       const svgContent = fs.readFileSync(workingPath, 'utf8');
-      const optimized = optimizeSvg(svgContent, settings.svgMode || 'safe');
+      const optimized = optimizeSvg(svgContent, settings.svgMode || 'standard');
       fs.writeFileSync(outputPath, optimized);
       const outputStats = fs.statSync(outputPath);
       return {
@@ -80,13 +91,21 @@ export async function processImage(
     }
 
     // Resize if needed (to temp file)
+    // For SVG→raster, set density so Sharp rasterizes at target resolution
+    const isSvgInput = inputFormat === 'svg' || workingPath.toLowerCase().endsWith('.svg');
+    let density: number | undefined;
+    if (isSvgInput && settings.width && info.width > 0) {
+      density = Math.ceil(72 * (settings.width / info.width));
+    }
+
     let resizedPath = workingPath;
-    if (settings.width || settings.height) {
-      resizedPath = path.join(os.tmpdir(), `resize-${Date.now()}${path.extname(workingPath)}`);
+    if (settings.width || settings.height || density) {
+      resizedPath = path.join(os.tmpdir(), `resize-${Date.now()}.png`);
       await resizeImage(workingPath, resizedPath, {
         width: settings.width,
         height: settings.height,
         maintainAspectRatio: settings.maintainAspectRatio,
+        density,
       });
     }
 

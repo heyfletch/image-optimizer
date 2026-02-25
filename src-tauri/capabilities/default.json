@@ -30,6 +30,7 @@
     "fs:scope-download-recursive",
     "fs:scope-document-recursive",
     "fs:scope-picture-recursive",
-    "store:default"
+    "store:default",
+    "core:window:allow-set-focus"
   ]
 }
