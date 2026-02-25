@@ -33,6 +33,7 @@ const standardConfig: Config = {
 const configs: Record<SvgMode, Config> = {
   'safe': safeConfig,
   'standard': standardConfig,
+  'none': {},
 };
 
 export function optimizeSvg(svgString: string, mode: SvgMode): string {
