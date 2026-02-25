@@ -135,6 +135,19 @@ function App() {
 
   const isProcessing = processingState === 'processing' || batchProcessing;
 
+  const handleTrashComplete = useCallback((index: number) => {
+    setImages(prev => {
+      const next = prev.filter((_, i) => i !== index);
+      return next;
+    });
+    setSelectedIndex(prev => {
+      const remaining = images.length - 1;
+      if (remaining <= 0) return 0;
+      if (prev >= remaining) return remaining - 1;
+      return prev;
+    });
+  }, [images.length]);
+
   const allOptimizedPaths = images
     .filter(img => img.optimizedPath)
     .map(img => img.optimizedPath!);
@@ -176,6 +189,7 @@ function App() {
                       originalPath={selectedImage.path}
                       filename={selectedImage.filename}
                       allOptimizedPaths={allOptimizedPaths}
+                      onTrashComplete={() => handleTrashComplete(selectedIndex)}
                     />
                   )}
                 </div>

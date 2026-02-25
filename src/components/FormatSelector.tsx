@@ -3,7 +3,7 @@ const FORMATS = [
   { value: 'png', label: 'PNG' },
   { value: 'webp', label: 'WebP' },
   { value: 'avif', label: 'AVIF' },
-  { value: 'same', label: 'Same' },
+  { value: 'same', label: 'Resize only' },
   { value: 'svg', label: 'SVG' },
 ] as const;
 
@@ -16,7 +16,7 @@ interface FormatSelectorProps {
 export function FormatSelector({ value, onChange, inputFormat }: FormatSelectorProps) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-400 mb-2">Format</label>
+      <label className="block text-xs font-medium text-gray-400 mb-2">Convert to</label>
       <div className="flex flex-wrap gap-1">
         {FORMATS.map(({ value: fmt, label }) => {
           // Only show SVG option if input is SVG

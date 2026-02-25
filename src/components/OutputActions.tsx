@@ -9,9 +9,10 @@ interface OutputActionsProps {
   originalPath: string;
   filename: string;
   allOptimizedPaths: string[];
+  onTrashComplete?: () => void;
 }
 
-export function OutputActions({ optimizedPath, originalPath, filename, allOptimizedPaths }: OutputActionsProps) {
+export function OutputActions({ optimizedPath, originalPath, filename, allOptimizedPaths, onTrashComplete }: OutputActionsProps) {
   const handleSaveTo = useCallback(async () => {
     const ext = optimizedPath.split('.').pop() || '';
     const dest = await save({
@@ -23,24 +24,14 @@ export function OutputActions({ optimizedPath, originalPath, filename, allOptimi
     }
   }, [optimizedPath, filename]);
 
-  const handleReplace = useCallback(async () => {
-    // Create backup with .bak.{ext} name, move to trash, then copy optimized to original path
-    const ext = originalPath.split('.').pop() || '';
-    const dir = originalPath.substring(0, originalPath.lastIndexOf('/'));
-    const basename = originalPath.substring(originalPath.lastIndexOf('/') + 1);
-    const nameNoExt = basename.substring(0, basename.lastIndexOf('.'));
-    const bakPath = `${dir}/${nameNoExt}.bak.${ext}`;
-
-    // Rename original to .bak.ext, then trash it
-    await rename(originalPath, bakPath);
-    await invoke('move_to_trash', { path: bakPath });
-    // Copy optimized to original path
-    await copyFile(optimizedPath, originalPath);
-  }, [optimizedPath, originalPath]);
-
   const handleTrashOriginal = useCallback(async () => {
-    await invoke('move_to_trash', { path: originalPath });
-  }, [originalPath]);
+    try {
+      await invoke('move_to_trash', { path: originalPath });
+      onTrashComplete?.();
+    } catch (err) {
+      console.error('Failed to trash original:', err);
+    }
+  }, [originalPath, onTrashComplete]);
 
   const handleDragAll = useCallback(async () => {
     if (allOptimizedPaths.length > 0) {
@@ -55,12 +46,6 @@ export function OutputActions({ optimizedPath, originalPath, filename, allOptimi
         className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
       >
         Save to...
-      </button>
-      <button
-        onClick={handleReplace}
-        className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
-      >
-        Replace original
       </button>
       <button
         onClick={handleTrashOriginal}
