@@ -6,7 +6,7 @@ import { optimizeJpeg } from './formats/jpeg.js';
 import { optimizePng } from './formats/png.js';
 import { optimizeWebp } from './formats/webp.js';
 import { optimizeAvif } from './formats/avif.js';
-import { optimizeSvg } from './formats/svg.js';
+import { optimizeSvg, resizeSvg, makeSvgResponsive } from './formats/svg.js';
 import { decodeHeic } from './formats/heic.js';
 import { resizeImage } from './resize.js';
 import { enforceMaxFileSize } from './maxFileSize.js';
@@ -80,13 +80,30 @@ export async function processImage(
     // Handle SVG
     if (targetFormat === 'svg') {
       const svgContent = fs.readFileSync(workingPath, 'utf8');
-      const optimized = optimizeSvg(svgContent, settings.svgMode || 'standard');
+      let optimized = optimizeSvg(svgContent, settings.svgMode || 'standard');
+
+      let finalWidth = info.width;
+      let finalHeight = info.height;
+
+      // Resize SVG if a target width is set
+      if (settings.width && info.width > 0) {
+        const resized = resizeSvg(optimized, settings.width, info.width, info.height);
+        optimized = resized.content;
+        finalWidth = resized.width;
+        finalHeight = resized.height;
+      }
+
+      // Make responsive: remove fixed width/height, keep viewBox
+      if (settings.svgResponsive) {
+        optimized = makeSvgResponsive(optimized, finalWidth, finalHeight);
+      }
+
       fs.writeFileSync(outputPath, optimized);
       const outputStats = fs.statSync(outputPath);
       return {
         id: '', success: true, outputPath,
         inputSize: info.size, outputSize: outputStats.size,
-        width: info.width, height: info.height, format: 'svg',
+        width: finalWidth, height: finalHeight, format: 'svg',
       };
     }
 
