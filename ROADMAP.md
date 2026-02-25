@@ -31,6 +31,13 @@
 - Click-to-edit the output filename before optimizing
 - "Clean" button to sanitize filenames (replace spaces/special chars with hyphens)
 
+## Lossless Toggle
+- Add a lossless encoding toggle for WebP and AVIF formats
+- When enabled, passes `lossless: true` to Sharp and disables the quality slider
+- Best for screenshots, graphics, and text-heavy images
+- Not applicable to JPEG (inherently lossy) or PNG (always lossless)
+- Note: lossless re-encoding of photos can produce larger files than the original
+
 ## Settings Page
 - Dedicated settings view to adjust defaults:
   - Default output format

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { save } from '@tauri-apps/plugin-dialog';
-import { copyFile, rename } from '@tauri-apps/plugin-fs';
+import { copyFile } from '@tauri-apps/plugin-fs';
 import { invoke } from '@tauri-apps/api/core';
 import { startDrag } from '@crabnebula/tauri-plugin-drag';
 

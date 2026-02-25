@@ -30,7 +30,7 @@ export function SettingsPanel({
 
   const isSvg = imageFormat === 'svg' || settings.format === 'svg';
   const isPng = settings.format === 'png' || (settings.format === 'same' && imageFormat === 'png');
-  const qualityDisabled = isPng || isSvg;
+  const qualityDisabled = isSvg;
 
   return (
     <div className="p-4 space-y-5">
