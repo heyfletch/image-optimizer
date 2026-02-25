@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { startSidecar, sendRequest } from "./lib/ipc";
 import { useDragDrop } from "./hooks/useDragDrop";
+import { useImageProcessor } from "./hooks/useImageProcessor";
 import { DropZone } from "./components/DropZone";
 import { ImagePreview } from "./components/ImagePreview";
 import { SettingsPanel } from "./components/SettingsPanel";
@@ -32,8 +33,8 @@ function App() {
   const [sidecarReady, setSidecarReady] = useState(false);
   const [image, setImage] = useState<ImageState | null>(null);
   const [settings, setSettings] = useState<OptimizeSettings>(defaultSettings);
-  const [processing, setProcessing] = useState(false);
   const { isDragging, droppedFiles } = useDragDrop();
+  const { processingState, getInfo, optimize } = useImageProcessor();
 
   useEffect(() => {
     startSidecar()
@@ -45,27 +46,15 @@ function App() {
   }, []);
 
   const loadImage = useCallback(async (filePath: string) => {
-    const response = await sendRequest({
-      action: "info",
-      inputPath: filePath,
-      outputPath: "",
-      settings: defaultSettings,
-    });
-
-    if (response.success) {
-      const filename = filePath.split("/").pop() || filePath;
+    const info = await getInfo(filePath);
+    if (info) {
       setImage({
-        path: filePath,
-        filename,
-        size: response.inputSize || 0,
-        width: response.width || 0,
-        height: response.height || 0,
-        format: response.format || "",
+        ...info,
         optimizedPath: null,
         optimizedSize: null,
       });
     }
-  }, []);
+  }, [getInfo]);
 
   useEffect(() => {
     if (droppedFiles.length > 0) {
@@ -87,26 +76,17 @@ function App() {
 
   const handleOptimize = useCallback(async () => {
     if (!image) return;
-    setProcessing(true);
 
     const ext = settings.format === "same" ? image.path.split(".").pop() : settings.format;
     const outputPath = image.path.replace(/\.[^.]+$/, `-optimized.${ext}`);
 
-    const response = await sendRequest({
-      action: "optimize",
-      inputPath: image.path,
-      outputPath,
-      settings,
-    });
-
-    if (response.success) {
+    const result = await optimize(image.path, outputPath, settings);
+    if (result) {
       setImage((prev) =>
-        prev ? { ...prev, optimizedPath: response.outputPath || outputPath, optimizedSize: response.outputSize || null } : prev
+        prev ? { ...prev, optimizedPath: result.optimizedPath, optimizedSize: result.optimizedSize } : prev
       );
     }
-
-    setProcessing(false);
-  }, [image, settings]);
+  }, [image, settings, optimize]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-900 text-white select-none">
@@ -142,7 +122,7 @@ function App() {
             imageWidth={image?.width || null}
             imageHeight={image?.height || null}
             onOptimize={handleOptimize}
-            processing={processing}
+            processing={processingState === 'processing'}
             hasImage={!!image}
           />
         </div>
