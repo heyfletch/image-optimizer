@@ -7,6 +7,7 @@ import { DropZone } from "./components/DropZone";
 import { ImagePreview } from "./components/ImagePreview";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { OutputActions } from "./components/OutputActions";
+import { ThumbnailStrip } from "./components/ThumbnailStrip";
 import type { OptimizeSettings } from "../sidecar/src/types";
 
 interface ImageState {
@@ -18,6 +19,7 @@ interface ImageState {
   format: string;
   optimizedPath: string | null;
   optimizedSize: number | null;
+  status: 'pending' | 'processing' | 'done';
 }
 
 const defaultSettings: OptimizeSettings = {
@@ -32,10 +34,14 @@ const defaultSettings: OptimizeSettings = {
 
 function App() {
   const [sidecarReady, setSidecarReady] = useState(false);
-  const [image, setImage] = useState<ImageState | null>(null);
+  const [images, setImages] = useState<ImageState[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [settings, setSettings] = useState<OptimizeSettings>(defaultSettings);
+  const [batchProcessing, setBatchProcessing] = useState(false);
   const { isDragging, droppedFiles } = useDragDrop();
   const { processingState, getInfo, optimize } = useImageProcessor();
+
+  const selectedImage = images[selectedIndex] || null;
 
   useEffect(() => {
     startSidecar()
@@ -46,81 +52,123 @@ function App() {
       .catch((err) => console.error("Sidecar failed:", err));
   }, []);
 
-  const loadImage = useCallback(async (filePath: string) => {
-    const info = await getInfo(filePath);
-    if (info) {
-      setImage({
-        ...info,
-        optimizedPath: null,
-        optimizedSize: null,
-      });
+  const loadImages = useCallback(async (filePaths: string[]) => {
+    const newImages: ImageState[] = [];
+    for (const filePath of filePaths) {
+      const info = await getInfo(filePath);
+      if (info) {
+        newImages.push({
+          ...info,
+          optimizedPath: null,
+          optimizedSize: null,
+          status: 'pending',
+        });
+      }
     }
+    setImages(newImages);
+    setSelectedIndex(0);
   }, [getInfo]);
 
   useEffect(() => {
     if (droppedFiles.length > 0) {
-      loadImage(droppedFiles[0]);
+      loadImages(droppedFiles);
     }
-  }, [droppedFiles, loadImage]);
+  }, [droppedFiles, loadImages]);
 
   const handleBrowse = useCallback(async () => {
     const selected = await open({
-      multiple: false,
+      multiple: true,
       filters: [
         { name: "Images", extensions: ["jpg", "jpeg", "png", "webp", "avif", "heic", "heif", "svg"] },
       ],
     });
     if (selected) {
-      loadImage(selected);
+      const paths = Array.isArray(selected) ? selected : [selected];
+      loadImages(paths);
     }
-  }, [loadImage]);
+  }, [loadImages]);
+
+  const optimizeImage = useCallback(async (index: number) => {
+    const img = images[index];
+    if (!img) return;
+
+    const ext = settings.format === "same" ? img.path.split(".").pop() : settings.format;
+    const outputPath = img.path.replace(/\.[^.]+$/, `-optimized.${ext}`);
+
+    setImages(prev => prev.map((im, i) => i === index ? { ...im, status: 'processing' } : im));
+
+    const result = await optimize(img.path, outputPath, settings);
+
+    if (result) {
+      setImages(prev => prev.map((im, i) =>
+        i === index ? { ...im, optimizedPath: result.optimizedPath, optimizedSize: result.optimizedSize, status: 'done' } : im
+      ));
+    } else {
+      setImages(prev => prev.map((im, i) => i === index ? { ...im, status: 'pending' } : im));
+    }
+  }, [images, settings, optimize]);
 
   const handleOptimize = useCallback(async () => {
-    if (!image) return;
+    if (images.length === 0) return;
 
-    const ext = settings.format === "same" ? image.path.split(".").pop() : settings.format;
-    const outputPath = image.path.replace(/\.[^.]+$/, `-optimized.${ext}`);
-
-    const result = await optimize(image.path, outputPath, settings);
-    if (result) {
-      setImage((prev) =>
-        prev ? { ...prev, optimizedPath: result.optimizedPath, optimizedSize: result.optimizedSize } : prev
-      );
+    if (images.length === 1) {
+      await optimizeImage(0);
+    } else {
+      setBatchProcessing(true);
+      for (let i = 0; i < images.length; i++) {
+        await optimizeImage(i);
+      }
+      setBatchProcessing(false);
     }
-  }, [image, settings, optimize]);
+  }, [images, optimizeImage]);
+
+  const isProcessing = processingState === 'processing' || batchProcessing;
 
   return (
     <div className="h-screen flex flex-col bg-gray-900 text-white select-none">
       {/* Status bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700 text-xs text-gray-400">
         <span>Image Optimizer</span>
-        <span>{sidecarReady ? "Ready" : "Connecting..."}</span>
+        <span>
+          {!sidecarReady ? "Connecting..." :
+           images.length > 0 ? `${images.length} image${images.length > 1 ? 's' : ''}` :
+           "Ready"}
+        </span>
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex min-h-0">
         {/* Left: Drop zone / Preview */}
-        <div className="flex-1 flex flex-col p-4 min-w-0">
-          <DropZone isDragging={isDragging} hasImage={!!image} onBrowse={handleBrowse}>
-            {image && (
-              <div className="flex flex-col items-center">
-                <ImagePreview
-                  originalPath={image.path}
-                  optimizedPath={image.optimizedPath}
-                  originalSize={image.size}
-                  optimizedSize={image.optimizedSize}
-                  filename={image.filename}
-                />
-                {image.optimizedPath && (
-                  <OutputActions
-                    optimizedPath={image.optimizedPath}
-                    originalPath={image.path}
-                    filename={image.filename}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col p-4">
+            <DropZone isDragging={isDragging} hasImage={!!selectedImage} onBrowse={handleBrowse}>
+              {selectedImage && (
+                <div className="flex flex-col items-center">
+                  <ImagePreview
+                    originalPath={selectedImage.path}
+                    optimizedPath={selectedImage.optimizedPath}
+                    originalSize={selectedImage.size}
+                    optimizedSize={selectedImage.optimizedSize}
+                    filename={selectedImage.filename}
                   />
-                )}
-              </div>
-            )}
-          </DropZone>
+                  {selectedImage.optimizedPath && (
+                    <OutputActions
+                      optimizedPath={selectedImage.optimizedPath}
+                      originalPath={selectedImage.path}
+                      filename={selectedImage.filename}
+                    />
+                  )}
+                </div>
+              )}
+            </DropZone>
+          </div>
+
+          {/* Thumbnail strip */}
+          <ThumbnailStrip
+            images={images}
+            selectedIndex={selectedIndex}
+            onSelect={setSelectedIndex}
+          />
         </div>
 
         {/* Right: Settings panel */}
@@ -128,12 +176,12 @@ function App() {
           <SettingsPanel
             settings={settings}
             onSettingsChange={setSettings}
-            imageFormat={image?.format || null}
-            imageWidth={image?.width || null}
-            imageHeight={image?.height || null}
+            imageFormat={selectedImage?.format || null}
+            imageWidth={selectedImage?.width || null}
+            imageHeight={selectedImage?.height || null}
             onOptimize={handleOptimize}
-            processing={processingState === 'processing'}
-            hasImage={!!image}
+            processing={isProcessing}
+            hasImage={images.length > 0}
           />
         </div>
       </div>
