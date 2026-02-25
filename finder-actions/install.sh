@@ -16,19 +16,26 @@ npx tsc
 # Make scripts executable
 chmod +x "$SCRIPT_DIR"/*.sh
 
-# Create Quick Actions using osacompile
+# Create Quick Actions matching Automator's native format
 create_quick_action() {
   local name="$1"
   local script="$2"
   local workflow_dir="$SERVICES_DIR/${name}.workflow"
+  local input_uuid=$(uuidgen)
+  local output_uuid=$(uuidgen)
+  local action_uuid=$(uuidgen)
+  local unique_id=$(uuidgen)
 
   echo "Creating Quick Action: $name"
+
+  # Remove old workflow if it exists
+  rm -rf "$workflow_dir"
 
   # Create the workflow directory structure
   mkdir -p "$workflow_dir/Contents"
 
   # Create the Info.plist
-  cat > "$workflow_dir/Contents/Info.plist" << 'PLIST'
+  cat > "$workflow_dir/Contents/Info.plist" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -39,7 +46,7 @@ create_quick_action() {
 			<key>NSMenuItem</key>
 			<dict>
 				<key>default</key>
-				<string>WORKFLOW_NAME</string>
+				<string>$name</string>
 			</dict>
 			<key>NSMessage</key>
 			<string>runWorkflowAsService</string>
@@ -48,16 +55,15 @@ create_quick_action() {
 </dict>
 </plist>
 PLIST
-  sed -i '' "s/WORKFLOW_NAME/$name/" "$workflow_dir/Contents/Info.plist"
 
-  # Create the document.wflow
+  # Create the document.wflow matching Automator's native format
   cat > "$workflow_dir/Contents/document.wflow" << WFLOW
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>AMApplicationBuild</key>
-	<string>523</string>
+	<string>528</string>
 	<key>AMApplicationVersion</key>
 	<string>2.10</string>
 	<key>AMDocumentVersion</key>
@@ -72,32 +78,45 @@ PLIST
 					<key>Container</key>
 					<string>List</string>
 					<key>Optional</key>
-					<false/>
+					<true/>
 					<key>Types</key>
 					<array>
-						<string>com.apple.cocoa.path</string>
+						<string>com.apple.cocoa.string</string>
 					</array>
 				</dict>
 				<key>AMActionVersion</key>
-				<string>1.0.2</string>
+				<string>2.0.3</string>
 				<key>AMApplication</key>
 				<array>
 					<string>Automator</string>
 				</array>
-				<key>AMBundleIdentifier</key>
-				<string>com.apple.RunShellScript</string>
-				<key>AMCategory</key>
-				<string>AMCategoryUtilities</string>
-				<key>AMIconName</key>
-				<string>Automator</string>
-				<key>AMKeywords</key>
-				<array>
-					<string>Shell</string>
-					<string>Script</string>
-				</array>
-				<key>AMName</key>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>COMMAND_STRING</key>
+					<dict/>
+					<key>CheckedForUserDefaultShell</key>
+					<dict/>
+					<key>inputMethod</key>
+					<dict/>
+					<key>shell</key>
+					<dict/>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.string</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run Shell Script.action</string>
+				<key>ActionName</key>
 				<string>Run Shell Script</string>
-				<key>AMParameters</key>
+				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
 					<string>$script "\$@"</string>
@@ -110,18 +129,111 @@ PLIST
 					<key>source</key>
 					<string></string>
 				</dict>
-				<key>AMProvides</key>
+				<key>BundleIdentifier</key>
+				<string>com.apple.RunShellScript</string>
+				<key>CFBundleVersion</key>
+				<string>2.0.3</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunShellScriptAction</string>
+				<key>InputUUID</key>
+				<string>$input_uuid</string>
+				<key>Keywords</key>
+				<array>
+					<string>Shell</string>
+					<string>Script</string>
+					<string>Command</string>
+					<string>Run</string>
+					<string>Unix</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>$output_uuid</string>
+				<key>UUID</key>
+				<string>$action_uuid</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
 				<dict>
-					<key>Container</key>
-					<string>List</string>
-					<key>Types</key>
-					<array>
-						<string>com.apple.cocoa.path</string>
-					</array>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<integer>0</integer>
+						<key>name</key>
+						<string>inputMethod</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+					<key>1</key>
+					<dict>
+						<key>default value</key>
+						<false/>
+						<key>name</key>
+						<string>CheckedForUserDefaultShell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>1</string>
+					</dict>
+					<key>2</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>2</string>
+					</dict>
+					<key>3</key>
+					<dict>
+						<key>default value</key>
+						<string></string>
+						<key>name</key>
+						<string>COMMAND_STRING</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>3</string>
+					</dict>
+					<key>4</key>
+					<dict>
+						<key>default value</key>
+						<string>/bin/sh</string>
+						<key>name</key>
+						<string>shell</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>4</string>
+					</dict>
 				</dict>
-				<key>AMTag</key>
-				<string>AMTagUtilities</string>
+				<key>isViewVisible</key>
+				<integer>1</integer>
 			</dict>
+			<key>isViewVisible</key>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>connectors</key>
@@ -137,18 +249,34 @@ PLIST
 		</dict>
 		<key>applicationPath</key>
 		<string>/System/Library/CoreServices/Finder.app</string>
+		<key>applicationPaths</key>
+		<array>
+			<string>/System/Library/CoreServices/Finder.app</string>
+		</array>
 		<key>inputTypeIdentifier</key>
 		<string>com.apple.Automator.fileSystemObject</string>
+		<key>outputTypeIdentifier</key>
+		<string>com.apple.Automator.nothing</string>
 		<key>presentationMode</key>
-		<integer>0</integer>
+		<integer>15</integer>
 		<key>processesInput</key>
-		<integer>0</integer>
+		<false/>
+		<key>serviceApplicationBundleID</key>
+		<string>com.apple.finder</string>
+		<key>serviceApplicationPath</key>
+		<string>/System/Library/CoreServices/Finder.app</string>
 		<key>serviceInputTypeIdentifier</key>
 		<string>com.apple.Automator.fileSystemObject</string>
 		<key>serviceOutputTypeIdentifier</key>
 		<string>com.apple.Automator.nothing</string>
+		<key>serviceProcessesInput</key>
+		<false/>
+		<key>systemImageName</key>
+		<string>NSActionTemplate</string>
 		<key>uniqueID</key>
-		<string>$(uuidgen)</string>
+		<string>$unique_id</string>
+		<key>useAutomaticInputType</key>
+		<false/>
 		<key>workflowTypeIdentifier</key>
 		<string>com.apple.Automator.servicesMenu</string>
 	</dict>

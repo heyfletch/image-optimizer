@@ -1,0 +1,24 @@
+#!/bin/bash
+# Get selected files from Finder via AppleScript
+files=$(osascript -e '
+  tell application "Finder"
+    set selectedItems to selection
+    set filePaths to {}
+    repeat with anItem in selectedItems
+      set end of filePaths to POSIX path of (anItem as alias)
+    end repeat
+    set AppleScript'\''s text item delimiters to "
+"
+    return filePaths as text
+  end tell
+')
+
+if [ -z "$files" ]; then
+  osascript -e 'display notification "No files selected in Finder" with title "Image Optimizer"'
+  exit 0
+fi
+
+# Convert newline-separated list to arguments
+while IFS= read -r file; do
+  "/Users/joe/Dropbox/Projects/AiCoding/image-optimizer/finder-actions/to-webp.sh" "$file"
+done <<< "$files"

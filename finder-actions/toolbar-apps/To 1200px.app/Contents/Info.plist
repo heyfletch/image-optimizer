@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>To 1200px</string>
+    <key>CFBundleDisplayName</key>
+    <string>To 1200px</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.image-optimizer.to-1200px</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>run</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Image Optimizer needs to display notifications.</string>
+</dict>
+</plist>
