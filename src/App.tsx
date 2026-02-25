@@ -21,6 +21,7 @@ interface ImageState {
   optimizedSize: number | null;
   optimizedWidth: number | null;
   optimizedHeight: number | null;
+  optimizedFormat: string | null;
   status: 'pending' | 'processing' | 'done';
 }
 
@@ -32,6 +33,7 @@ const defaultSettings = {
   maintainAspectRatio: true,
   maxFileSize: null,
   svgMode: null,
+  svgResponsive: false,
 };
 
 function App() {
@@ -75,6 +77,7 @@ function App() {
           optimizedSize: null,
           optimizedWidth: null,
           optimizedHeight: null,
+          optimizedFormat: null,
           status: 'pending',
         });
       }
@@ -121,6 +124,7 @@ function App() {
           optimizedSize: result.optimizedSize,
           optimizedWidth: result.optimizedWidth,
           optimizedHeight: result.optimizedHeight,
+          optimizedFormat: result.optimizedFormat,
           status: 'done',
         } : im
       ));

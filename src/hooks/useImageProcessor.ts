@@ -16,6 +16,7 @@ export interface ProcessResult {
   optimizedSize: number;
   optimizedWidth: number;
   optimizedHeight: number;
+  optimizedFormat: string;
 }
 
 type ProcessingState = 'idle' | 'processing' | 'done' | 'error';
@@ -28,6 +29,7 @@ const defaultSettings: OptimizeSettings = {
   maintainAspectRatio: true,
   maxFileSize: null,
   svgMode: null,
+  svgResponsive: false,
 };
 
 export function useImageProcessor() {
@@ -76,6 +78,7 @@ export function useImageProcessor() {
         optimizedSize: response.outputSize || 0,
         optimizedWidth: response.width || 0,
         optimizedHeight: response.height || 0,
+        optimizedFormat: response.format || '',
       };
     } else {
       setProcessingState('error');

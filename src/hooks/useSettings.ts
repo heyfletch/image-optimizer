@@ -13,6 +13,7 @@ const defaultSettings: OptimizeSettings = {
   maintainAspectRatio: true,
   maxFileSize: null,
   svgMode: null,
+  svgResponsive: false,
 };
 
 export function useSettings() {

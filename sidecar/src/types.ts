@@ -14,6 +14,7 @@ export interface OptimizeSettings {
   maintainAspectRatio: boolean;
   maxFileSize: number | null;  // bytes, null = no limit
   svgMode: 'safe' | 'standard' | null;
+  svgResponsive: boolean;
 }
 
 export interface ProcessResponse {
