@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicehash/tauri/dev/crates/tauri-config-schema/schema.json",
+  "productName": "Image Optimizer",
+  "version": "0.1.0",
+  "identifier": "com.image-optimizer.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Image Optimizer",
+        "width": 900,
+        "height": 700
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}
