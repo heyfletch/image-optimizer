@@ -28,8 +28,8 @@ export async function getImageInfo(inputPath: string): Promise<ImageInfo> {
     let height = 0;
 
     // Try explicit width/height first
-    const widthMatch = content.match(/width="(\d+)/);
-    const heightMatch = content.match(/height="(\d+)/);
+    const widthMatch = content.match(/<svg[^>]*\swidth="(\d+(?:\.\d+)?)"/);
+    const heightMatch = content.match(/<svg[^>]*\sheight="(\d+(?:\.\d+)?)"/);
     if (widthMatch) width = parseInt(widthMatch[1]);
     if (heightMatch) height = parseInt(heightMatch[1]);
 
