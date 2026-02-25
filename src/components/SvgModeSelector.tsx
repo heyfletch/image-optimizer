@@ -35,7 +35,7 @@ export function SvgModeSelector({ value, onChange, svgResponsive, onResponsiveCh
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-2">SVG Options</label>
+        <label className="block text-xs font-medium text-gray-400 mb-2">Web Responsive</label>
         <button
           onClick={() => onResponsiveChange(!svgResponsive)}
           className={`w-full text-left px-3 py-2 rounded-md text-xs transition-colors ${
@@ -45,7 +45,7 @@ export function SvgModeSelector({ value, onChange, svgResponsive, onResponsiveCh
           }`}
         >
           <span className="font-medium">Make Responsive</span>
-          <span className="ml-2 text-gray-400">Removes fixed size, scales to container</span>
+          <span className="ml-2 text-gray-400">Removes fixed sizes</span>
         </button>
       </div>
     </div>
