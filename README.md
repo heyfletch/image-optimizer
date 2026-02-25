@@ -47,12 +47,10 @@ npm run tauri build
 The built `.app` will be in `src-tauri/target/release/bundle/macos/`. To install:
 
 ```bash
-cp -r src-tauri/target/release/bundle/macos/Image\ Optimizer.app /Applications/
+cp -r "src-tauri/target/release/bundle/macos/Image Optimizer.app" /Applications/
 ```
 
-On first launch, right-click the app and choose **Open** (bypasses Gatekeeper for unsigned apps).
-
-A `.dmg` installer is also created at `src-tauri/target/release/bundle/dmg/`.
+On first launch, right-click the app in Applications and choose **Open** (bypasses Gatekeeper for unsigned apps).
 
 ## Finder Quick Actions
 
