@@ -1,9 +1,9 @@
 const FORMATS = [
-  { value: 'same', label: 'Same' },
   { value: 'jpeg', label: 'JPEG' },
   { value: 'png', label: 'PNG' },
   { value: 'webp', label: 'WebP' },
   { value: 'avif', label: 'AVIF' },
+  { value: 'same', label: 'Same' },
   { value: 'svg', label: 'SVG' },
 ] as const;
 

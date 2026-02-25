@@ -10,7 +10,6 @@ interface SettingsPanelProps {
   onSettingsChange: (settings: OptimizeSettings) => void;
   imageFormat: string | null;
   imageWidth: number | null;
-  imageHeight: number | null;
   onOptimize: () => void;
   processing: boolean;
   hasImage: boolean;
@@ -21,7 +20,6 @@ export function SettingsPanel({
   onSettingsChange,
   imageFormat,
   imageWidth,
-  imageHeight,
   onOptimize,
   processing,
   hasImage,
@@ -51,13 +49,8 @@ export function SettingsPanel({
       {!isSvg && (
         <DimensionControls
           width={settings.width}
-          height={settings.height}
-          maintainAspectRatio={settings.maintainAspectRatio}
           imageWidth={imageWidth}
-          imageHeight={imageHeight}
-          onWidthChange={(width) => update({ width })}
-          onHeightChange={(height) => update({ height })}
-          onAspectRatioChange={(maintainAspectRatio) => update({ maintainAspectRatio })}
+          onWidthChange={(width) => update({ width, height: null, maintainAspectRatio: true })}
         />
       )}
 

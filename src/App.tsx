@@ -9,6 +9,7 @@ import { ImagePreview } from "./components/ImagePreview";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { OutputActions } from "./components/OutputActions";
 import { ThumbnailStrip } from "./components/ThumbnailStrip";
+
 interface ImageState {
   path: string;
   filename: string;
@@ -18,6 +19,8 @@ interface ImageState {
   format: string;
   optimizedPath: string | null;
   optimizedSize: number | null;
+  optimizedWidth: number | null;
+  optimizedHeight: number | null;
   status: 'pending' | 'processing' | 'done';
 }
 
@@ -60,6 +63,8 @@ function App() {
           ...info,
           optimizedPath: null,
           optimizedSize: null,
+          optimizedWidth: null,
+          optimizedHeight: null,
           status: 'pending',
         });
       }
@@ -100,7 +105,14 @@ function App() {
 
     if (result) {
       setImages(prev => prev.map((im, i) =>
-        i === index ? { ...im, optimizedPath: result.optimizedPath, optimizedSize: result.optimizedSize, status: 'done' } : im
+        i === index ? {
+          ...im,
+          optimizedPath: result.optimizedPath,
+          optimizedSize: result.optimizedSize,
+          optimizedWidth: result.optimizedWidth,
+          optimizedHeight: result.optimizedHeight,
+          status: 'done',
+        } : im
       ));
     } else {
       setImages(prev => prev.map((im, i) => i === index ? { ...im, status: 'pending' } : im));
@@ -122,6 +134,10 @@ function App() {
   }, [images, optimizeImage]);
 
   const isProcessing = processingState === 'processing' || batchProcessing;
+
+  const allOptimizedPaths = images
+    .filter(img => img.optimizedPath)
+    .map(img => img.optimizedPath!);
 
   return (
     <div className="h-screen flex flex-col bg-gray-900 text-white select-none">
@@ -148,6 +164,10 @@ function App() {
                     optimizedPath={selectedImage.optimizedPath}
                     originalSize={selectedImage.size}
                     optimizedSize={selectedImage.optimizedSize}
+                    originalWidth={selectedImage.width}
+                    originalHeight={selectedImage.height}
+                    optimizedWidth={selectedImage.optimizedWidth}
+                    optimizedHeight={selectedImage.optimizedHeight}
                     filename={selectedImage.filename}
                   />
                   {selectedImage.optimizedPath && (
@@ -155,6 +175,7 @@ function App() {
                       optimizedPath={selectedImage.optimizedPath}
                       originalPath={selectedImage.path}
                       filename={selectedImage.filename}
+                      allOptimizedPaths={allOptimizedPaths}
                     />
                   )}
                 </div>
@@ -177,7 +198,6 @@ function App() {
             onSettingsChange={setSettings}
             imageFormat={selectedImage?.format || null}
             imageWidth={selectedImage?.width || null}
-            imageHeight={selectedImage?.height || null}
             onOptimize={handleOptimize}
             processing={isProcessing}
             hasImage={images.length > 0}

@@ -27,7 +27,8 @@ export function useSettings() {
         const store = await load(STORE_NAME);
         const saved = await store.get<OptimizeSettings>(SETTINGS_KEY);
         if (saved) {
-          setSettingsState({ ...defaultSettings, ...saved });
+          // Always reset format to 'same', height to null (width-only resize)
+          setSettingsState({ ...defaultSettings, ...saved, format: 'same', height: null, maintainAspectRatio: true });
         }
       } catch (err) {
         console.warn('Failed to load settings:', err);

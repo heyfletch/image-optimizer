@@ -19,26 +19,17 @@
     "dialog:allow-save",
     "drag:allow-start-drag",
     "drag:default",
-    {
-      "identifier": "fs:allow-rename",
-      "allow": [{ "path": "**" }]
-    },
-    {
-      "identifier": "fs:allow-copy-file",
-      "allow": [{ "path": "**" }]
-    },
-    {
-      "identifier": "fs:allow-read",
-      "allow": [{ "path": "**" }]
-    },
-    {
-      "identifier": "fs:allow-write",
-      "allow": [{ "path": "**" }]
-    },
-    {
-      "identifier": "fs:allow-exists",
-      "allow": [{ "path": "**" }]
-    },
+    "fs:allow-read",
+    "fs:allow-write",
+    "fs:allow-rename",
+    "fs:allow-copy-file",
+    "fs:allow-exists",
+    "fs:scope-home-recursive",
+    "fs:scope-temp-recursive",
+    "fs:scope-desktop-recursive",
+    "fs:scope-download-recursive",
+    "fs:scope-document-recursive",
+    "fs:scope-picture-recursive",
     "store:default"
   ]
 }

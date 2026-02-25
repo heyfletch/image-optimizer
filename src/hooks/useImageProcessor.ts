@@ -14,6 +14,8 @@ export interface ImageInfo {
 export interface ProcessResult {
   optimizedPath: string;
   optimizedSize: number;
+  optimizedWidth: number;
+  optimizedHeight: number;
 }
 
 type ProcessingState = 'idle' | 'processing' | 'done' | 'error';
@@ -72,6 +74,8 @@ export function useImageProcessor() {
       return {
         optimizedPath: response.outputPath || outputPath,
         optimizedSize: response.outputSize || 0,
+        optimizedWidth: response.width || 0,
+        optimizedHeight: response.height || 0,
       };
     } else {
       setProcessingState('error');
