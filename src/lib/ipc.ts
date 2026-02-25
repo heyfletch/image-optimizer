@@ -1,4 +1,5 @@
 import { Command } from '@tauri-apps/plugin-shell';
+import { resolveResource } from '@tauri-apps/api/path';
 import type { ProcessRequest, ProcessResponse } from '../../sidecar/src/types';
 
 let sidecarProcess: Awaited<ReturnType<Command<string>['spawn']>> | null = null;
@@ -6,7 +7,10 @@ const responseHandlers = new Map<string, (response: ProcessResponse) => void>();
 let requestId = 0;
 
 export async function startSidecar(): Promise<void> {
-  const command = Command.create('node', ['../sidecar/dist/index.js']);
+  const scriptPath = import.meta.env.DEV
+    ? '../sidecar/dist/index.js'
+    : await resolveResource('sidecar/dist/index.js');
+  const command = Command.create('node', [scriptPath]);
 
   command.stdout.on('data', (line: string) => {
     try {

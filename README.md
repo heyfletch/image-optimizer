@@ -52,6 +52,8 @@ cp -r "src-tauri/target/release/bundle/macos/Image Optimizer.app" /Applications/
 
 On first launch, right-click the app in Applications and choose **Open** (bypasses Gatekeeper for unsigned apps).
 
+**Note:** The app requires Node.js on the system (installed via [nvm](https://github.com/nvm-sh/nvm) or Homebrew). The sidecar and its dependencies are bundled inside the `.app`, but Node.js itself must be available.
+
 ## Finder Quick Actions
 
 Right-click any image in Finder to optimize, convert, or resize without opening the app.

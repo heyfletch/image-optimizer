@@ -56,8 +56,45 @@ fn move_to_trash(path: String) -> Result<(), String> {
     std::fs::rename(&path, &dest).map_err(|e| format!("Failed to move to trash: {}", e))
 }
 
+#[cfg(target_os = "macos")]
+fn augment_path_for_node() {
+    if let Ok(home) = std::env::var("HOME") {
+        let current_path = std::env::var("PATH").unwrap_or_default();
+        let mut extra_paths: Vec<String> = Vec::new();
+
+        // Find nvm's latest node version
+        let nvm_dir = std::path::Path::new(&home).join(".nvm/versions/node");
+        if let Ok(entries) = std::fs::read_dir(&nvm_dir) {
+            let mut versions: Vec<std::path::PathBuf> =
+                entries.filter_map(|e| e.ok()).map(|e| e.path()).collect();
+            versions.sort();
+            if let Some(latest) = versions.last() {
+                let bin_dir = latest.join("bin");
+                if bin_dir.exists() {
+                    extra_paths.push(bin_dir.to_string_lossy().into_owned());
+                }
+            }
+        }
+
+        // Common Homebrew locations
+        for dir in &["/opt/homebrew/bin", "/usr/local/bin"] {
+            if std::path::Path::new(dir).exists() && !current_path.contains(dir) {
+                extra_paths.push(dir.to_string());
+            }
+        }
+
+        if !extra_paths.is_empty() {
+            extra_paths.push(current_path);
+            std::env::set_var("PATH", extra_paths.join(":"));
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    #[cfg(target_os = "macos")]
+    augment_path_for_node();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
