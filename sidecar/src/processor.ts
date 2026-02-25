@@ -60,6 +60,8 @@ export async function processImage(
   outputPath: string,
   settings: OptimizeSettings
 ): Promise<ProcessResponse> {
+  let workingPath = inputPath;
+  let resizedPath = inputPath;
   try {
     const info = await getImageInfo(inputPath);
     const inputFormat = info.format;
@@ -68,7 +70,6 @@ export async function processImage(
       : settings.format;
 
     // Handle HEIC: decode to temp JPEG first
-    let workingPath = inputPath;
     const isHeic = inputFormat === 'heif' || inputFormat === 'heic' ||
       inputPath.toLowerCase().endsWith('.heic') || inputPath.toLowerCase().endsWith('.heif');
 
@@ -115,7 +116,7 @@ export async function processImage(
       density = Math.ceil(72 * (settings.width / info.width));
     }
 
-    let resizedPath = workingPath;
+    resizedPath = workingPath;
     if (settings.width || settings.height || density) {
       resizedPath = path.join(os.tmpdir(), `resize-${Date.now()}.png`);
       await resizeImage(workingPath, resizedPath, {
@@ -160,10 +161,6 @@ export async function processImage(
     const outputMeta = await sharp(outputPath).metadata();
     const outputStats = fs.statSync(outputPath);
 
-    // Cleanup temp files
-    if (resizedPath !== workingPath) fs.unlinkSync(resizedPath);
-    if (workingPath !== inputPath) fs.unlinkSync(workingPath);
-
     return {
       id: '', success: true, outputPath,
       inputSize: info.size, outputSize: outputStats.size,
@@ -175,5 +172,11 @@ export async function processImage(
       id: '', success: false,
       error: error instanceof Error ? error.message : String(error),
     };
+  } finally {
+    // Cleanup temp files (runs on both success and error)
+    try {
+      if (resizedPath !== workingPath && fs.existsSync(resizedPath)) fs.unlinkSync(resizedPath);
+      if (workingPath !== inputPath && fs.existsSync(workingPath)) fs.unlinkSync(workingPath);
+    } catch {}
   }
 }

@@ -12,8 +12,8 @@ for f in "$@"; do
   result=$("$NODE_BIN" "$SIDECAR_DIR/dist/index.js" --optimize --input "$f" --output "$output" --quality 92 2>&1)
 
   if [ $? -eq 0 ]; then
-    osascript -e "display notification \"$result\" with title \"Image Optimizer\""
+    osascript -e "display notification \"$(printf '%s' "$result" | tr '"' "'")\" with title \"Image Optimizer\""
   else
-    osascript -e "display notification \"Failed: $result\" with title \"Image Optimizer\" sound name \"Basso\""
+    osascript -e "display notification \"$(printf '%s' "Failed: $result" | tr '"' "'")\" with title \"Image Optimizer\" sound name \"Basso\""
   fi
 done

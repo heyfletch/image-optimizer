@@ -9,8 +9,8 @@ for f in "$@"; do
   result=$("$NODE_BIN" "$SIDECAR_DIR/dist/index.js" --optimize --input "$f" --output "$output" --width 512 --quality 92 2>&1)
 
   if [ $? -eq 0 ]; then
-    osascript -e "display notification \"$result\" with title \"To 512px\""
+    osascript -e "display notification \"$(printf '%s' "$result" | tr '"' "'")\" with title \"To 512px\""
   else
-    osascript -e "display notification \"Failed: $result\" with title \"To 512px\" sound name \"Basso\""
+    osascript -e "display notification \"$(printf '%s' "Failed: $result" | tr '"' "'")\" with title \"To 512px\" sound name \"Basso\""
   fi
 done

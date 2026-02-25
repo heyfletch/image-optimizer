@@ -32,9 +32,13 @@ export async function startSidecar(): Promise<void> {
 
 export function sendRequest(request: Omit<ProcessRequest, 'id'>): Promise<ProcessResponse> {
   const id = String(++requestId);
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    if (!sidecarProcess) {
+      reject(new Error('Sidecar not running'));
+      return;
+    }
     responseHandlers.set(id, resolve);
-    sidecarProcess?.write(JSON.stringify({ ...request, id }) + '\n');
+    sidecarProcess.write(JSON.stringify({ ...request, id }) + '\n');
   });
 }
 
