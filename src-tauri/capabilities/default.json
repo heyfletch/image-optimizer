@@ -13,6 +13,9 @@
           "args": true
         }
       ]
-    }
+    },
+    "shell:allow-stdin-write",
+    "dialog:allow-open",
+    "dialog:allow-save"
   ]
 }

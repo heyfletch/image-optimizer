@@ -1,7 +1,7 @@
 import { Command } from '@tauri-apps/plugin-shell';
 import type { ProcessRequest, ProcessResponse } from '../../sidecar/src/types';
 
-let sidecarProcess: Awaited<ReturnType<Command['spawn']>> | null = null;
+let sidecarProcess: Awaited<ReturnType<Command<string>['spawn']>> | null = null;
 const responseHandlers = new Map<string, (response: ProcessResponse) => void>();
 let requestId = 0;
 
