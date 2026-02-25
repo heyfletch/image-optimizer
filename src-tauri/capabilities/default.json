@@ -38,6 +38,7 @@
     {
       "identifier": "fs:allow-exists",
       "allow": [{ "path": "**" }]
-    }
+    },
+    "store:default"
   ]
 }

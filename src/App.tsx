@@ -3,13 +3,12 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { startSidecar, sendRequest } from "./lib/ipc";
 import { useDragDrop } from "./hooks/useDragDrop";
 import { useImageProcessor } from "./hooks/useImageProcessor";
+import { useSettings } from "./hooks/useSettings";
 import { DropZone } from "./components/DropZone";
 import { ImagePreview } from "./components/ImagePreview";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { OutputActions } from "./components/OutputActions";
 import { ThumbnailStrip } from "./components/ThumbnailStrip";
-import type { OptimizeSettings } from "../sidecar/src/types";
-
 interface ImageState {
   path: string;
   filename: string;
@@ -22,8 +21,8 @@ interface ImageState {
   status: 'pending' | 'processing' | 'done';
 }
 
-const defaultSettings: OptimizeSettings = {
-  format: "same",
+const defaultSettings = {
+  format: "same" as const,
   quality: 92,
   width: null,
   height: null,
@@ -36,7 +35,7 @@ function App() {
   const [sidecarReady, setSidecarReady] = useState(false);
   const [images, setImages] = useState<ImageState[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [settings, setSettings] = useState<OptimizeSettings>(defaultSettings);
+  const { settings, setSettings } = useSettings();
   const [batchProcessing, setBatchProcessing] = useState(false);
   const { isDragging, droppedFiles } = useDragDrop();
   const { processingState, getInfo, optimize } = useImageProcessor();
