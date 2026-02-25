@@ -32,7 +32,8 @@ export function SettingsPanel({
   const isSvgOutput = settings.format === 'svg';
   const isPng = settings.format === 'png' || (settings.format === 'same' && imageFormat === 'png');
   const showQuality = !isSvgInput;
-  const showDimensions = !(isSvgOutput && settings.svgResponsive);
+  const showDimensions = !isSvgOutput || isSvgInput;
+  const dimensionsDisabled = isSvgOutput && settings.svgResponsive;
   const showMaxFileSize = !isPng && !isSvgInput;
   const showSvgMode = isSvgOutput;
 
@@ -57,6 +58,7 @@ export function SettingsPanel({
           width={settings.width}
           imageWidth={imageWidth}
           onWidthChange={(width) => update({ width, height: null, maintainAspectRatio: true })}
+          disabled={dimensionsDisabled}
         />
       )}
 

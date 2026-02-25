@@ -2,6 +2,7 @@ interface DimensionControlsProps {
   width: number | null;
   imageWidth: number | null;
   onWidthChange: (width: number | null) => void;
+  disabled?: boolean;
 }
 
 const PRESETS = [2400, 1200, 512];
@@ -10,9 +11,10 @@ export function DimensionControls({
   width,
   imageWidth,
   onWidthChange,
+  disabled = false,
 }: DimensionControlsProps) {
   return (
-    <div>
+    <div className={disabled ? 'opacity-40 pointer-events-none' : ''}>
       <label className="block text-xs font-medium text-gray-400 mb-2">Resize Width</label>
 
       <div className="mb-2">
@@ -21,6 +23,7 @@ export function DimensionControls({
           min={1}
           value={width ?? ''}
           placeholder={imageWidth?.toString() ?? 'Original'}
+          disabled={disabled}
           onChange={(e) => {
             const v = e.target.value ? Number(e.target.value) : null;
             onWidthChange(v);
@@ -33,6 +36,7 @@ export function DimensionControls({
         {PRESETS.map((preset) => (
           <button
             key={preset}
+            disabled={disabled}
             onClick={() => onWidthChange(preset)}
             className={`flex-1 px-2 py-1 text-xs rounded transition-colors ${
               width === preset
@@ -44,6 +48,7 @@ export function DimensionControls({
           </button>
         ))}
         <button
+          disabled={disabled}
           onClick={() => onWidthChange(null)}
           className={`flex-1 px-2 py-1 text-xs rounded transition-colors ${
             width == null
