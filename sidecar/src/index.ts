@@ -68,6 +68,7 @@ function parseCliArgs(): { mode: 'cli'; action: string; input: string; output: s
         maintainAspectRatio: true,
         maxFileSize: null,
         svgMode: null,
+        svgResponsive: false,
       },
     };
   }

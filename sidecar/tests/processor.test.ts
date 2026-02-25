@@ -13,7 +13,7 @@ describe('Central processor', () => {
     const result = await processImage(
       path.join(fixtures, 'test.jpg'),
       path.join(tmpDir, 'proc-test.jpg'),
-      { format: 'same', quality: 92, width: null, height: null, maintainAspectRatio: true, maxFileSize: null, svgMode: null }
+      { format: 'same', quality: 92, width: null, height: null, maintainAspectRatio: true, maxFileSize: null, svgMode: null, svgResponsive: false }
     );
     expect(result.success).toBe(true);
     expect(result.format).toBe('jpeg');
@@ -23,7 +23,7 @@ describe('Central processor', () => {
     const result = await processImage(
       path.join(fixtures, 'test.png'),
       path.join(tmpDir, 'proc-convert.webp'),
-      { format: 'webp', quality: 85, width: null, height: null, maintainAspectRatio: true, maxFileSize: null, svgMode: null }
+      { format: 'webp', quality: 85, width: null, height: null, maintainAspectRatio: true, maxFileSize: null, svgMode: null, svgResponsive: false }
     );
     expect(result.success).toBe(true);
     const meta = await sharp(path.join(tmpDir, 'proc-convert.webp')).metadata();
