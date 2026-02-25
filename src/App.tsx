@@ -195,6 +195,7 @@ function App() {
                     originalHeight={selectedImage.height}
                     optimizedWidth={selectedImage.optimizedWidth}
                     optimizedHeight={selectedImage.optimizedHeight}
+                    optimizedFormat={selectedImage.optimizedFormat}
                     filename={selectedImage.filename}
                   />
                   {selectedImage.optimizedPath && (

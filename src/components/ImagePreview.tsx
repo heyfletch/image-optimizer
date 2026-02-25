@@ -40,13 +40,14 @@ interface ImagePreviewProps {
   originalHeight: number;
   optimizedWidth: number | null;
   optimizedHeight: number | null;
+  optimizedFormat: string | null;
   filename: string;
 }
 
 export function ImagePreview({
   originalPath, optimizedPath, originalSize, optimizedSize,
   originalWidth, originalHeight, optimizedWidth, optimizedHeight,
-  filename
+  optimizedFormat, filename
 }: ImagePreviewProps) {
   const [showOriginal, setShowOriginal] = useState(false);
 
@@ -54,7 +55,9 @@ export function ImagePreview({
   const displayPath = showOriginal || !optimizedPath ? originalPath : optimizedPath;
   const displaySize = showOriginal || !optimizedSize ? originalSize : optimizedSize;
   const isOriginal = showOriginal || !optimizedPath;
-  const label = isOriginal ? 'Original' : 'Optimized';
+  const label = isOriginal
+    ? 'Original'
+    : `Optimized ${(optimizedFormat || '').toUpperCase()}`.trim();
   const { src: imageSrc, error } = useImageSrc(displayPath);
 
   const displayWidth = isOriginal ? originalWidth : (optimizedWidth ?? originalWidth);
