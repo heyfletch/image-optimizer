@@ -44,17 +44,15 @@ npm run tauri dev
 npm run tauri build
 ```
 
-The built app will be in `src-tauri/target/release/bundle/`. To install:
-
-1. Open `src-tauri/target/release/bundle/dmg/` and double-click the `.dmg`
-2. Drag **Image Optimizer** to your Applications folder
-3. On first launch, right-click the app and choose **Open** (bypasses Gatekeeper for unsigned apps)
-
-Or copy the `.app` directly:
+The built `.app` will be in `src-tauri/target/release/bundle/macos/`. To install:
 
 ```bash
 cp -r src-tauri/target/release/bundle/macos/Image\ Optimizer.app /Applications/
 ```
+
+On first launch, right-click the app and choose **Open** (bypasses Gatekeeper for unsigned apps).
+
+A `.dmg` installer is also created at `src-tauri/target/release/bundle/dmg/`.
 
 ## Finder Quick Actions
 
