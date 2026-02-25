@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api:*)",
+      "Bash(git add:*)",
+      "WebSearch",
+      "WebFetch(domain:sharp.pixelplumbing.com)",
+      "WebFetch(domain:v2.tauri.app)",
+      "WebFetch(domain:bun.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.rs)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(gh search:*)",
+      "Bash(npm view:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(source:*)",
+      "Bash(cd /Users/joe/Dropbox/Projects/AiCoding/image-optimizer/.worktrees/feature-implementation && npm init -y 2>&1)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(tail:*)",
+      "Bash(cd /Users/joe/Dropbox/Projects/AiCoding/image-optimizer/.worktrees/feature-implementation/src-tauri && cargo check 2>&1)",
+      "Bash(source \"$HOME/.cargo/env\" && cd /Users/joe/Dropbox/Projects/AiCoding/image-optimizer/.worktrees/feature-implementation/src-tauri && cargo check 2>&1)",
+      "Bash(PATH=\"$HOME/.cargo/bin:$PATH\" && cargo check --manifest-path /Users/joe/Dropbox/Projects/AiCoding/image-optimizer/.worktrees/feature-implementation/src-tauri/Cargo.toml 2>&1)",
+      "Bash(PATH=\"$HOME/.cargo/bin:$PATH\" cargo check:*)",
+      "Bash(git commit:*)",
+      "Bash(cd /Users/joe/Dropbox/Projects/AiCoding/image-optimizer/.worktrees/feature-implementation/sidecar && npm init -y 2>&1)",
+      "Bash(npm install sharp svgo 2>&1 && npm install -D typescript @types/node vitest 2>&1)",
+      "Bash(PATH=\"$HOME/.cargo/bin:$PATH\" cargo add:*)",
+      "Bash(npm add:*)"
+    ]
+  }
+}
