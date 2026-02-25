@@ -6,6 +6,7 @@ import { useImageProcessor } from "./hooks/useImageProcessor";
 import { DropZone } from "./components/DropZone";
 import { ImagePreview } from "./components/ImagePreview";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { OutputActions } from "./components/OutputActions";
 import type { OptimizeSettings } from "../sidecar/src/types";
 
 interface ImageState {
@@ -102,13 +103,22 @@ function App() {
         <div className="flex-1 flex flex-col p-4 min-w-0">
           <DropZone isDragging={isDragging} hasImage={!!image} onBrowse={handleBrowse}>
             {image && (
-              <ImagePreview
-                originalPath={image.path}
-                optimizedPath={image.optimizedPath}
-                originalSize={image.size}
-                optimizedSize={image.optimizedSize}
-                filename={image.filename}
-              />
+              <div className="flex flex-col items-center">
+                <ImagePreview
+                  originalPath={image.path}
+                  optimizedPath={image.optimizedPath}
+                  originalSize={image.size}
+                  optimizedSize={image.optimizedSize}
+                  filename={image.filename}
+                />
+                {image.optimizedPath && (
+                  <OutputActions
+                    optimizedPath={image.optimizedPath}
+                    originalPath={image.path}
+                    filename={image.filename}
+                  />
+                )}
+              </div>
             )}
           </DropZone>
         </div>
