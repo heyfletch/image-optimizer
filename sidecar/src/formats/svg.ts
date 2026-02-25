@@ -13,7 +13,7 @@ const safeConfig: Config = {
     'removeEmptyContainers',
     'removeEmptyText',
     'removeDesc',
-    { name: 'removeTitle', params: {} },
+    'removeTitle',
   ],
 };
 
