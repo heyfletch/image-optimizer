@@ -7,9 +7,7 @@ for f in "$@"; do
   output="${f%.*}.webp"
   result=$("$NODE_BIN" "$SIDECAR_DIR/dist/index.js" --optimize --input "$f" --output "$output" --format webp --quality 85 2>&1)
 
-  if [ $? -eq 0 ]; then
-    osascript -e "display notification \"$(printf '%s' "$result" | tr '"' "'")\" with title \"To WebP\""
-  else
-    osascript -e "display notification \"$(printf '%s' "Failed: $result" | tr '"' "'")\" with title \"To WebP\" sound name \"Basso\""
+  if [ $? -ne 0 ]; then
+    echo "Failed: $result" >&2
   fi
 done

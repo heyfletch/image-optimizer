@@ -14,7 +14,6 @@ files=$(osascript -e '
 ')
 
 if [ -z "$files" ]; then
-  osascript -e 'display notification "No files selected in Finder" with title "Image Optimizer"'
   exit 0
 fi
 

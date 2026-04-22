@@ -8,9 +8,7 @@ for f in "$@"; do
   output="${f%.*}-512.${ext}"
   result=$("$NODE_BIN" "$SIDECAR_DIR/dist/index.js" --optimize --input "$f" --output "$output" --width 512 --quality 92 2>&1)
 
-  if [ $? -eq 0 ]; then
-    osascript -e "display notification \"$(printf '%s' "$result" | tr '"' "'")\" with title \"To 512px\""
-  else
-    osascript -e "display notification \"$(printf '%s' "Failed: $result" | tr '"' "'")\" with title \"To 512px\" sound name \"Basso\""
+  if [ $? -ne 0 ]; then
+    echo "Failed: $result" >&2
   fi
 done
