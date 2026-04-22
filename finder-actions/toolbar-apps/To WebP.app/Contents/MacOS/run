@@ -19,5 +19,5 @@ fi
 
 # Convert newline-separated list to arguments
 while IFS= read -r file; do
-  "/Users/joe/Dropbox/Projects/AiCoding/image-optimizer/finder-actions/to-webp.sh" "$file"
+  "/Users/joe/Dropbox/Claude/Projects/image-optimizer/finder-actions/to-webp.sh" "$file"
 done <<< "$files"

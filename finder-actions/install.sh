@@ -43,6 +43,10 @@ create_quick_action() {
 	<key>NSServices</key>
 	<array>
 		<dict>
+			<key>NSBackgroundColorName</key>
+			<string>background</string>
+			<key>NSIconName</key>
+			<string>NSActionTemplate</string>
 			<key>NSMenuItem</key>
 			<dict>
 				<key>default</key>
@@ -50,6 +54,15 @@ create_quick_action() {
 			</dict>
 			<key>NSMessage</key>
 			<string>runWorkflowAsService</string>
+			<key>NSRequiredContext</key>
+			<dict>
+				<key>NSApplicationIdentifier</key>
+				<string>com.apple.finder</string>
+			</dict>
+			<key>NSSendFileTypes</key>
+			<array>
+				<string>public.item</string>
+			</array>
 		</dict>
 	</array>
 </dict>
@@ -292,6 +305,36 @@ create_quick_action "Image to JPEG" "$SCRIPT_DIR/to-jpg.sh"
 create_quick_action "Image to 2400px" "$SCRIPT_DIR/to-2400px.sh"
 create_quick_action "Image to 1200px" "$SCRIPT_DIR/to-1200px.sh"
 create_quick_action "Image to 512px" "$SCRIPT_DIR/to-512px.sh"
+
+# macOS 26 regression: workflows written directly to ~/Library/Services/ are
+# NOT registered in Finder's Quick Actions menu until Automator saves them.
+# Open each in Automator and trigger Cmd-S + Cmd-W to force registration.
+echo ""
+echo "Registering workflows with Automator (macOS 26 requirement)..."
+osascript -e 'tell application "Automator" to quit' 2>/dev/null || true
+sleep 1
+for name in "Optimize Image" "Image to WebP" "Image to JPEG" "Image to 2400px" "Image to 1200px" "Image to 512px"; do
+  echo "  Registering: $name"
+  open -a "/System/Applications/Automator.app" "$SERVICES_DIR/$name.workflow"
+  sleep 3
+  osascript <<APPLESCRIPT
+tell application "System Events"
+    tell process "Automator"
+        keystroke "s" using command down
+        delay 1
+        keystroke "w" using command down
+        delay 0.5
+    end tell
+end tell
+APPLESCRIPT
+  sleep 1
+done
+osascript -e 'tell application "Automator" to quit' 2>/dev/null || true
+
+# Refresh pbs services database and restart Finder so the new actions show up
+/System/Library/CoreServices/pbs -update -flush 2>/dev/null || true
+killall cfprefsd 2>/dev/null || true
+killall Finder 2>/dev/null || true
 
 echo ""
 echo "Quick Actions installed to: $SERVICES_DIR"
