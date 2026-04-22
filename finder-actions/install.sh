@@ -316,18 +316,18 @@ sleep 1
 for name in "Optimize Image" "Image to WebP" "Image to JPEG" "Image to 2400px" "Image to 1200px" "Image to 512px"; do
   echo "  Registering: $name"
   open -a "/System/Applications/Automator.app" "$SERVICES_DIR/$name.workflow"
-  sleep 3
+  sleep 5
   osascript <<APPLESCRIPT
 tell application "System Events"
     tell process "Automator"
         keystroke "s" using command down
-        delay 1
+        delay 2
         keystroke "w" using command down
-        delay 0.5
+        delay 1
     end tell
 end tell
 APPLESCRIPT
-  sleep 1
+  sleep 2
 done
 osascript -e 'tell application "Automator" to quit' 2>/dev/null || true
 
