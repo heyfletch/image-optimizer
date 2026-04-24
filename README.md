@@ -72,17 +72,19 @@ This creates Automator workflows in `~/Library/Services/`:
 - **Image to 1200px** — Resize to 1200px wide
 - **Image to 512px** — Resize to 512px wide
 
-If the actions don't appear in Finder's right-click menu, enable them in **System Settings > Privacy & Security > Extensions > Finder Extensions**.
+On macOS 26, the installer opens each workflow in Automator briefly to register it — this is required (writing the workflow files alone is not enough). The script handles this automatically, but do not interact with your Mac while it runs.
+
+If any action is missing after install, right-click an image → **Quick Actions** → **Customize…** and toggle the missing items on.
 
 ### Install Toolbar Apps (optional)
 
 Draggable buttons for the Finder toolbar that process whichever files are selected.
 
 ```bash
-cd finder-actions && ./create-toolbar-apps.sh
+cd finder-actions && ./create-toolbar-apps.sh && open toolbar-apps
 ```
 
-Then hold **Cmd** and drag any `.app` from `finder-actions/toolbar-apps/` into the Finder toolbar.
+Then hold **Cmd** and drag any `.app` from the opened `toolbar-apps/` Finder window into the Finder toolbar.
 
 ### Uninstall
 
