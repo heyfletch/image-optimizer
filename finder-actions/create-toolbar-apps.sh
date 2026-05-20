@@ -85,6 +85,7 @@ chmod +x "$SCRIPT_DIR"/*.sh
 # Create toolbar apps
 create_app "Optimize" "$SCRIPT_DIR/optimize.sh"
 create_app "To WebP" "$SCRIPT_DIR/to-webp.sh"
+create_app "To AVIF" "$SCRIPT_DIR/to-avif.sh"
 create_app "To JPEG" "$SCRIPT_DIR/to-jpg.sh"
 create_app "To 2400px" "$SCRIPT_DIR/to-2400px.sh"
 create_app "To 1200px" "$SCRIPT_DIR/to-1200px.sh"

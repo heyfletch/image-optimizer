@@ -48,6 +48,6 @@ cd finder-actions && ./install.sh              # install Quick Actions
 
 On macOS 26 (Tahoe), writing a `.workflow` bundle directly into `~/Library/Services/` is **not sufficient** to make it appear in Finder's Quick Actions menu — even with correct `Info.plist` (`NSServices`, `NSSendFileTypes`, `NSRequiredContext`) and a valid `document.wflow`. `pbs -dump_pboard` will show the service registered, but the right-click menu will not show it.
 
-The workflow must be **opened and saved in Automator** to trigger proper registration. `install.sh` automates this by opening each workflow with `/System/Applications/Automator.app`, sending Cmd-S then Cmd-W via AppleScript, then flushing pbs and restarting Finder.
+The workflow must be **opened and saved in Automator** to trigger proper registration. `install.sh` automates this using Automator's own AppleScript dictionary (`open`/`save`/`close`) — **do NOT use System Events keystrokes** (they require Accessibility permission which is typically denied for terminal apps running inside Windsurf/Claude). Then pbs is flushed and Finder restarted.
 
 If Automator is not installed (future macOS may remove it), migration to the Shortcuts app will be required. The Shortcuts CLI (`/usr/bin/shortcuts`) does not support programmatic import — shortcuts must be signed with `shortcuts sign --mode anyone` and imported through the UI.

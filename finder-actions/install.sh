@@ -301,6 +301,7 @@ WFLOW
 # Create all Quick Actions
 create_quick_action "Optimize Image" "$SCRIPT_DIR/optimize.sh"
 create_quick_action "Image to WebP" "$SCRIPT_DIR/to-webp.sh"
+create_quick_action "Image to AVIF" "$SCRIPT_DIR/to-avif.sh"
 create_quick_action "Image to JPEG" "$SCRIPT_DIR/to-jpg.sh"
 create_quick_action "Image to 2400px" "$SCRIPT_DIR/to-2400px.sh"
 create_quick_action "Image to 1200px" "$SCRIPT_DIR/to-1200px.sh"
@@ -308,26 +309,24 @@ create_quick_action "Image to 512px" "$SCRIPT_DIR/to-512px.sh"
 
 # macOS 26 regression: workflows written directly to ~/Library/Services/ are
 # NOT registered in Finder's Quick Actions menu until Automator saves them.
-# Open each in Automator and trigger Cmd-S + Cmd-W to force registration.
+# Use Automator's own AppleScript dictionary (open/save/close) — no Accessibility
+# permission required, unlike the System Events keystroke approach.
 echo ""
 echo "Registering workflows with Automator (macOS 26 requirement)..."
-osascript -e 'tell application "Automator" to quit' 2>/dev/null || true
-sleep 1
-for name in "Optimize Image" "Image to WebP" "Image to JPEG" "Image to 2400px" "Image to 1200px" "Image to 512px"; do
+for name in "Optimize Image" "Image to WebP" "Image to AVIF" "Image to JPEG" "Image to 2400px" "Image to 1200px" "Image to 512px"; do
   echo "  Registering: $name"
-  open -a "/System/Applications/Automator.app" "$SERVICES_DIR/$name.workflow"
-  sleep 5
+  # Quit any existing Automator instance before each open to avoid stale document references
+  osascript -e 'tell application "Automator" to quit' 2>/dev/null || true
+  sleep 2
   osascript <<APPLESCRIPT
-tell application "System Events"
-    tell process "Automator"
-        keystroke "s" using command down
-        delay 2
-        keystroke "w" using command down
-        delay 1
-    end tell
+tell application "Automator"
+    activate
+    set wf to open POSIX file "$SERVICES_DIR/$name.workflow"
+    delay 4
+    save wf
+    delay 1
 end tell
 APPLESCRIPT
-  sleep 2
 done
 osascript -e 'tell application "Automator" to quit' 2>/dev/null || true
 
