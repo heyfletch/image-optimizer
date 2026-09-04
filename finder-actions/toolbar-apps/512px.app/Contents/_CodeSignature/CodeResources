@@ -12,6 +12,10 @@
 		<data>
 		TyyCzvF9rrXg0/adFrfh05CqmK0=
 		</data>
+		<key>Resources/applet.icns</key>
+		<data>
+		2+vJsIdRhEnw4IxNSQuZGxjYo18=
+		</data>
 		<key>Resources/droplet.icns</key>
 		<data>
 		qNNSP6gATivEfI1mX4+VCxUouHQ=
@@ -43,6 +47,17 @@
 			<key>hash2</key>
 			<data>
 			qGBygd9XkX0iGs3aIDx9q9TtWLrbfpXVCEYzwhMrkg0=
+			</data>
+		</dict>
+		<key>Resources/applet.icns</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			2+vJsIdRhEnw4IxNSQuZGxjYo18=
+			</data>
+			<key>hash2</key>
+			<data>
+			IdfczI9GmcCLzI5uChmRsxupFZzQYownFjhuzSk9ZNk=
 			</data>
 		</dict>
 		<key>Resources/droplet.icns</key>

@@ -42,6 +42,7 @@ cd finder-actions && ./install.sh              # install Quick Actions
 
 - Toolbar apps are AppleScript droplets built by `create-toolbar-apps.sh` via `osacompile`. Never hand-edit a bundle; change the script and regenerate. A plain shell script in `Contents/MacOS` has no Mach-O header, so macOS 26 demands Rosetta — the osacompile stub is what makes them native arm64.
 - Each droplet has `on open` (files Finder passes on a toolbar click or drop — needs no permission) and an `on run` fallback that asks Finder for its selection, which requires a one-time Automation approval.
+- Toolbar icons: masters in `~/Dropbox/FDLLC/Assets/Icons/Mac Finder Automator Icons`, vendored at `finder-actions/icons/<AppName>.png` and converted to `Contents/Resources/applet.icns` at build time. Add a PNG named after the app to give a new button an icon.
 - Node.js path is resolved via nvm at runtime; no bundled Node.js.
 - Notifications: intentionally removed. The scripts previously used `osascript display notification` which bypasses macOS notification settings. Operations now run silently.
 

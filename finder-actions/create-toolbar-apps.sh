@@ -10,22 +10,40 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APPS_DIR="$SCRIPT_DIR/toolbar-apps"
+ICONS_DIR="$SCRIPT_DIR/icons"
 
 mkdir -p "$APPS_DIR"
+
+# Build Contents/Resources/applet.icns from icons/<name>.png. The icon lives in
+# the bundle, not in a resource-fork "Icon\r" file, so it survives git and any
+# regeneration.
+install_icon() {
+  local name="$1"
+  local app_dir="$2"
+  local png="$ICONS_DIR/${name}.png"
+
+  [ -f "$png" ] || { echo "  no icon: $png"; return 0; }
+
+  local work
+  work="$(mktemp -d)/icon.iconset"
+  mkdir -p "$work"
+
+  local s
+  for s in 16 32 128 256 512; do
+    sips -z $s $s "$png" --out "$work/icon_${s}x${s}.png" >/dev/null 2>&1
+    sips -z $((s * 2)) $((s * 2)) "$png" --out "$work/icon_${s}x${s}@2x.png" >/dev/null 2>&1
+  done
+
+  iconutil -c icns "$work" -o "$app_dir/Contents/Resources/applet.icns"
+  rm -rf "$(dirname "$work")"
+}
 
 create_app() {
   local name="$1"
   local script="$2"
   local app_dir="$APPS_DIR/${name}.app"
-  local icon=""
 
   echo "Creating toolbar app: $name"
-
-  # Preserve an existing custom icon across regeneration
-  if [ -f "$app_dir/Icon"$'\r' ]; then
-    icon="$(mktemp -t toolbar-icon)"
-    cp "$app_dir/Icon"$'\r' "$icon"
-  fi
 
   rm -rf "$app_dir"
 
@@ -76,12 +94,7 @@ end run
     -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:1 string public.svg-image" \
     "$plist" >/dev/null
 
-  if [ -n "$icon" ]; then
-    cp "$icon" "$app_dir/Icon"$'\r'
-    SetFile -a C "$app_dir" 2>/dev/null || true
-    SetFile -a V "$app_dir/Icon"$'\r' 2>/dev/null || true
-    rm -f "$icon"
-  fi
+  install_icon "$name" "$app_dir"
 
   # Re-sign ad hoc so macOS trusts the modified bundle
   codesign --force --deep --sign - "$app_dir" 2>/dev/null || true
