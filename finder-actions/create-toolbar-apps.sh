@@ -14,13 +14,19 @@ ICONS_DIR="$SCRIPT_DIR/icons"
 
 mkdir -p "$APPS_DIR"
 
-# Build Contents/Resources/applet.icns from icons/<name>.png. The icon lives in
+# Build Contents/Resources/toolbar.icns from icons/<name>.png. The icon lives in
 # the bundle, not in a resource-fork "Icon\r" file, so it survives git and any
 # regeneration.
+#
+# osacompile ships its own droplet icon three ways: droplet.icns, droplet.rsrc,
+# and a "droplet" entry in Assets.car referenced by CFBundleIconName. The asset
+# catalog wins over any .icns, so all three have to go or the generic droplet
+# icon keeps showing.
 install_icon() {
   local name="$1"
   local app_dir="$2"
   local png="$ICONS_DIR/${name}.png"
+  local res="$app_dir/Contents/Resources"
 
   [ -f "$png" ] || { echo "  no icon: $png"; return 0; }
 
@@ -34,8 +40,13 @@ install_icon() {
     sips -z $((s * 2)) $((s * 2)) "$png" --out "$work/icon_${s}x${s}@2x.png" >/dev/null 2>&1
   done
 
-  iconutil -c icns "$work" -o "$app_dir/Contents/Resources/applet.icns"
+  iconutil -c icns "$work" -o "$res/toolbar.icns"
   rm -rf "$(dirname "$work")"
+
+  rm -f "$res/Assets.car" "$res/applet.icns" "$res/droplet.icns" "$res/droplet.rsrc"
+
+  /usr/libexec/PlistBuddy -c "Delete :CFBundleIconName" "$app_dir/Contents/Info.plist" >/dev/null 2>&1 || true
+  /usr/libexec/PlistBuddy -c "Set :CFBundleIconFile toolbar" "$app_dir/Contents/Info.plist" >/dev/null
 }
 
 create_app() {
